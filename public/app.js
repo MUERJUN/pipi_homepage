@@ -8,13 +8,18 @@ const state = {
 };
 
 const cards = [
-  { rarity: "N", title: "Normal boot", text: "今天正常开机" },
-  { rarity: "R", title: "Low battery", text: "能跑就行" },
-  { rarity: "R", title: "Focus mode", text: "何意味？" },
-  { rarity: "SR", title: "Weird signal", text: "看啥呢" },
-  { rarity: "SR", title: "Clean chaos", text: "1111111" },
-  { rarity: "SSR", title: "Page alive", text: "管你这的那的先来给我炒个菜" },
-  { rarity: "UR", title: "Do not explain", text: "没死呢，别想吃席了" },
+  { rarity: "N", title: "正常开机", text: "今天正常开机，先别想太多。" },
+  { rarity: "N", title: "能跑就行", text: "别管优不优雅，能跑已经很给面子了。" },
+  { rarity: "R", title: "低电量", text: "有点虚，但不是不能用。" },
+  { rarity: "R", title: "何意味？", text: "看懂了算你厉害，我也不一定懂。" },
+  { rarity: "R", title: "别问", text: "问就是还没做完。" },
+  { rarity: "SR", title: "看啥呢", text: "来都来了，点两下再走。" },
+  { rarity: "SR", title: "干净混乱", text: "可以乱，但不能丑。" },
+  { rarity: "SR", title: "施工中", text: "不是没做完，是正在生成。" },
+  { rarity: "SSR", title: "网页活着", text: "管你这的那的，先来给我炒个菜。" },
+  { rarity: "SSR", title: "系统正常", text: "正常得有点不正常。" },
+  { rarity: "UR", title: "没死呢", text: "没死呢，别想吃席了。" },
+  { rarity: "UR", title: "不解释", text: "今天不解释，直接跳过。" },
 ];
 
 init();
@@ -66,8 +71,8 @@ function setupSecret() {
 
       if (secretText) {
         secretText.textContent = document.body.classList.contains("secret-mode")
-          ? "Secret mode enabled."
-          : "Secret mode disabled.";
+          ? "行，被你点出来了。"
+          : "关了，当没发生过。";
       }
     }
   });
@@ -108,7 +113,7 @@ function setupReaction() {
         <p>${reactionComment(ms)}</p>
       `;
 
-      btn.textContent = "Restart";
+      btn.textContent = "再来";
       return;
     }
 
@@ -116,11 +121,11 @@ function setupReaction() {
 
     box.className = "reaction-box waiting";
     box.innerHTML = `
-      <strong>Wait...</strong>
+      <strong>等会</strong>
       <p>别急，变绿再点。</p>
     `;
 
-    btn.textContent = "Waiting";
+    btn.textContent = "等着";
     btn.disabled = true;
 
     const delay = 900 + Math.floor(Math.random() * 2600);
@@ -131,11 +136,11 @@ function setupReaction() {
 
       box.className = "reaction-box ready";
       box.innerHTML = `
-        <strong>CLICK</strong>
-        <p>现在点按钮。</p>
+        <strong>点</strong>
+        <p>现在点，别愣着。</p>
       `;
 
-      btn.textContent = "Click";
+      btn.textContent = "点我";
       btn.disabled = false;
     }, delay);
 
@@ -143,11 +148,11 @@ function setupReaction() {
       if (!state.reactionArmed && btn.disabled) {
         clearTimeout(state.reactionTimer);
         btn.disabled = false;
-        btn.textContent = "Restart";
+        btn.textContent = "再来";
         box.className = "reaction-box failed";
         box.innerHTML = `
-          <strong>Too early</strong>
-          <p>你这个预判有点急。</p>
+          <strong>急了</strong>
+          <p>你这预判有点太明显。</p>
         `;
       }
     };
@@ -155,10 +160,10 @@ function setupReaction() {
 }
 
 function reactionComment(ms) {
-  if (ms < 180) return "你开桂了吧";
-  if (ms < 260) return "牛福";
-  if (ms < 360) return "正常人类";
-  if (ms < 520) return "是真人吗";
+  if (ms < 180) return "你开桂了吧。";
+  if (ms < 260) return "牛福，这个反应可以。";
+  if (ms < 360) return "正常人类，暂时通过。";
+  if (ms < 520) return "是真人吗？";
   return "什么时候混进来的？";
 }
 
@@ -170,19 +175,24 @@ async function loadSteam() {
     const data = await res.json();
 
     if (!res.ok) {
-      throw new Error(data.error || "Steam API failed");
+      throw new Error(data.error || "Steam 加载失败");
     }
 
     renderSteam(data);
 
-    if (apiStatus) apiStatus.textContent = "Online";
+    if (apiStatus) apiStatus.textContent = "能用";
   } catch (err) {
-    if (apiStatus) apiStatus.textContent = "Failed";
+    if (apiStatus) apiStatus.textContent = "炸了";
 
-    $("#steamName").textContent = "Steam load failed";
-    $("#steamStatus").textContent = err.message || "Unknown error";
-    $("#recentGames").innerHTML = `<p class="empty">Steam 信息加载失败。</p>`;
-    $("#topGames").innerHTML = `<p class="empty">Steam 信息加载失败。</p>`;
+    const steamName = $("#steamName");
+    const steamStatus = $("#steamStatus");
+    const recentGames = $("#recentGames");
+    const topGames = $("#topGames");
+
+    if (steamName) steamName.textContent = "Steam 没加载出来";
+    if (steamStatus) steamStatus.textContent = err.message || "未知错误";
+    if (recentGames) recentGames.innerHTML = `<p class="empty">Steam 信息加载失败。</p>`;
+    if (topGames) topGames.innerHTML = `<p class="empty">Steam 信息加载失败。</p>`;
   }
 }
 
@@ -190,11 +200,18 @@ function renderSteam(data) {
   const profile = data.profile || {};
   const summary = data.summary || {};
 
-  $("#steamName").textContent = profile.name || "Unknown";
-  $("#steamStatus").textContent = profile.status || "Unknown";
-  $("#steamGameCount").textContent = summary.gameCount ?? "--";
-  $("#steamTotalHours").textContent =
-    summary.totalHours != null ? `${summary.totalHours}h` : "--";
+  const steamName = $("#steamName");
+  const steamStatus = $("#steamStatus");
+  const steamGameCount = $("#steamGameCount");
+  const steamTotalHours = $("#steamTotalHours");
+
+  if (steamName) steamName.textContent = profile.name || "未知玩家";
+  if (steamStatus) steamStatus.textContent = translateSteamStatus(profile.status);
+  if (steamGameCount) steamGameCount.textContent = summary.gameCount ?? "--";
+  if (steamTotalHours) {
+    steamTotalHours.textContent =
+      summary.totalHours != null ? `${summary.totalHours} 小时` : "--";
+  }
 
   const avatar = $("#steamAvatar");
   if (avatar) {
@@ -210,12 +227,27 @@ function renderSteam(data) {
   renderGames("#topGames", data.topGames || [], "top");
 }
 
+function translateSteamStatus(status) {
+  const map = {
+    Offline: "离线",
+    Online: "在线",
+    Busy: "忙着",
+    Away: "离开",
+    Snooze: "打盹",
+    "Looking to trade": "想交易",
+    "Looking to play": "想开一把",
+    Unknown: "未知",
+  };
+
+  return map[status] || status || "未知";
+}
+
 function renderGames(selector, games, mode) {
   const root = $(selector);
   if (!root) return;
 
   if (!games.length) {
-    root.innerHTML = `<p class="empty">No public game data.</p>`;
+    root.innerHTML = `<p class="empty">没拿到游戏数据，可能是隐私没公开。</p>`;
     return;
   }
 
@@ -223,8 +255,8 @@ function renderGames(selector, games, mode) {
     .map((game) => {
       const hours =
         mode === "recent"
-          ? `${game.hours2Weeks || 0}h / 2 weeks`
-          : `${game.hours || 0}h total`;
+          ? `近两周 ${game.hours2Weeks || 0} 小时`
+          : `总计 ${game.hours || 0} 小时`;
 
       return `
         <div class="game-item">
@@ -253,7 +285,6 @@ function setupGuestbook() {
     const name = $("#messageName").value.trim() || "匿名访客";
     const content = $("#messageContent").value.trim();
     const btn = $("#sendMessageBtn");
-    const hint = $("#messageHint");
 
     if (!content) {
       setHint("留言不能为空。", "bad");
@@ -261,8 +292,8 @@ function setupGuestbook() {
     }
 
     btn.disabled = true;
-    btn.textContent = "Sending...";
-    setHint("正在发送...", "");
+    btn.textContent = "贴上去中...";
+    setHint("正在贴，别连点。", "");
 
     try {
       const res = await fetch("/api/messages", {
@@ -280,13 +311,13 @@ function setupGuestbook() {
       }
 
       $("#messageContent").value = "";
-      setHint("留言发送成功。", "ok");
+      setHint("贴上去了。", "ok");
       await loadMessages();
     } catch (err) {
       setHint(err.message || "留言发送失败。", "bad");
     } finally {
       btn.disabled = false;
-      btn.textContent = "Send message";
+      btn.textContent = "贴上去";
     }
   });
 }
@@ -299,18 +330,18 @@ async function loadMessages() {
     const data = await res.json();
 
     if (!res.ok) {
-      throw new Error(data.error || "Guestbook failed");
+      throw new Error(data.error || "留言板加载失败");
     }
 
     renderMessages(data.messages || []);
 
-    if (status) status.textContent = "Online";
+    if (status) status.textContent = "能用";
   } catch (err) {
-    if (status) status.textContent = "Failed";
+    if (status) status.textContent = "炸了";
 
     const list = $("#messageList");
     if (list) {
-      list.innerHTML = `<p class="empty">留言加载失败：${escapeHTML(err.message || "Unknown")}</p>`;
+      list.innerHTML = `<p class="empty">留言加载失败：${escapeHTML(err.message || "未知错误")}</p>`;
     }
   }
 }
@@ -324,7 +355,7 @@ function renderMessages(messages) {
   if (!list) return;
 
   if (!messages.length) {
-    list.innerHTML = `<p class="empty">还没有留言。</p>`;
+    list.innerHTML = `<p class="empty">还没人贴东西。</p>`;
     return;
   }
 

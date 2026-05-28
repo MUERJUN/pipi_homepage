@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pipi_homepage</title>
-  <meta name="description" content="Steam 信息、留言板和一些小玩具。" />
+  <title>先放这儿</title>
+  <meta name="description" content="一个能看 Steam、能留言、能点几下的小页面。" />
   <link rel="stylesheet" href="./style.css" />
 </head>
 
@@ -16,13 +16,13 @@
   <header class="topbar">
     <a class="logo" href="#top">
       <span class="logo-mark"></span>
-      <span>pipi_homepage</span>
+      <span>先放这儿</span>
     </a>
 
     <nav>
       <a href="#steam">Steam</a>
-      <a href="#guestbook">Guestbook</a>
-      <a href="#toys">Toys</a>
+      <a href="#guestbook">留言板</a>
+      <a href="#toys">小玩具</a>
       <a href="https://github.com/MUERJUN/pipi_homepage" target="_blank">GitHub</a>
     </nav>
   </header>
@@ -30,15 +30,15 @@
   <main id="top">
     <section class="hero">
       <div class="hero-copy reveal">
-        <p class="chip">ONLINE / CLOUDFLARE WORKER</p>
+        <p class="chip">ONLINE / 能跑就行</p>
         <h1>
-          PIPI<br />
-          <span>CONTROL</span><br />
-          PANEL
+          先放<br />
+          <span>这儿</span><br />
+          别问
         </h1>
         <p class="hero-desc">
-          Steam profile, guestbook, small toys, random modules.
-          This page is not finished. It is just online.
+          这里先塞点能看的东西。Steam、留言板、几个小玩具。
+          做得完就继续做，做不完就先这样。
         </p>
       </div>
 
@@ -47,25 +47,25 @@
           <span></span>
           <span></span>
           <span></span>
-          <b>site.status</b>
+          <b>站点状态</b>
         </div>
 
         <div class="status-list">
           <div>
             <small>Worker</small>
-            <strong>Online</strong>
+            <strong>没死</strong>
           </div>
           <div>
-            <small>Steam API</small>
-            <strong id="steamApiStatus">Loading</strong>
+            <small>Steam</small>
+            <strong id="steamApiStatus">加载中</strong>
           </div>
           <div>
-            <small>Guestbook</small>
-            <strong id="guestbookStatus">Loading</strong>
+            <small>留言板</small>
+            <strong id="guestbookStatus">加载中</strong>
           </div>
           <div>
-            <small>Build</small>
-            <strong>Manual</strong>
+            <small>构建方式</small>
+            <strong>手搓</strong>
           </div>
         </div>
       </div>
@@ -74,56 +74,56 @@
     <section id="steam" class="section">
       <div class="section-title reveal">
         <p>STEAM</p>
-        <h2>Gaming card.</h2>
+        <h2>游戏痕迹。</h2>
       </div>
 
       <div class="steam-layout">
         <article class="steam-card reveal">
           <div class="steam-profile">
             <div class="avatar-wrap">
-              <img id="steamAvatar" alt="Steam avatar" />
+              <img id="steamAvatar" alt="Steam 头像" />
             </div>
 
             <div>
-              <p class="muted">Steam Profile</p>
-              <h3 id="steamName">Loading...</h3>
-              <p id="steamStatus" class="status-pill">Unknown</p>
+              <p class="muted">Steam 档案</p>
+              <h3 id="steamName">加载中...</h3>
+              <p id="steamStatus" class="status-pill">未知</p>
             </div>
           </div>
 
           <div class="steam-stats">
             <div>
-              <small>Games</small>
+              <small>游戏数量</small>
               <strong id="steamGameCount">--</strong>
             </div>
             <div>
-              <small>Total Hours</small>
+              <small>总时长</small>
               <strong id="steamTotalHours">--</strong>
             </div>
           </div>
 
           <a id="steamProfileLink" class="btn primary" target="_blank" href="#">
-            Open Steam
+            去 Steam 看看
           </a>
         </article>
 
         <article class="games-card reveal">
           <div class="mini-title">
-            <span>Recent</span>
-            <b>Last played</b>
+            <span>RECENT</span>
+            <b>最近在玩</b>
           </div>
           <div id="recentGames" class="game-list">
-            <p class="empty">Loading recent games...</p>
+            <p class="empty">正在扒最近玩的东西...</p>
           </div>
         </article>
 
         <article class="games-card reveal">
           <div class="mini-title">
-            <span>Top</span>
-            <b>Most played</b>
+            <span>TOP</span>
+            <b>玩最久的</b>
           </div>
           <div id="topGames" class="game-list">
-            <p class="empty">Loading top games...</p>
+            <p class="empty">正在扒时长...</p>
           </div>
         </article>
       </div>
@@ -132,23 +132,23 @@
     <section id="guestbook" class="section">
       <div class="section-title reveal">
         <p>GUESTBOOK</p>
-        <h2>Leave a mark.</h2>
+        <h2>来都来了。</h2>
       </div>
 
       <div class="guestbook-layout">
         <form id="messageForm" class="message-form reveal">
           <label>
-            Name
+            怎么称呼
             <input id="messageName" maxlength="20" placeholder="匿名访客" />
           </label>
 
           <label>
-            Message
-            <textarea id="messageContent" maxlength="200" placeholder="写点什么，最多 200 字"></textarea>
+            留点什么
+            <textarea id="messageContent" maxlength="200" placeholder="别太长，最多 200 字"></textarea>
           </label>
 
           <button class="btn primary" type="submit" id="sendMessageBtn">
-            Send message
+            贴上去
           </button>
 
           <p id="messageHint" class="hint"></p>
@@ -156,12 +156,12 @@
 
         <div class="message-wall reveal">
           <div class="mini-title">
-            <span>Messages</span>
+            <span>MESSAGES</span>
             <b id="messageCount">0</b>
           </div>
 
           <div id="messageList" class="message-list">
-            <p class="empty">Loading messages...</p>
+            <p class="empty">正在翻留言...</p>
           </div>
         </div>
       </div>
@@ -170,48 +170,48 @@
     <section id="toys" class="section">
       <div class="section-title reveal">
         <p>TOYS</p>
-        <h2>Small things.</h2>
+        <h2>没啥用，但能点。</h2>
       </div>
 
       <div class="toy-grid">
         <article class="toy-card reveal">
           <div class="mini-title">
-            <span>Daily draw</span>
-            <b>Card</b>
+            <span>DRAW</span>
+            <b>今日状态</b>
           </div>
 
           <div id="drawResult" class="draw-result">
-            <small>Click to draw</small>
+            <small>点一下</small>
             <strong>?</strong>
-            <p>今日状态未知</p>
+            <p>看看今天什么毛病</p>
           </div>
 
-          <button id="drawBtn" class="btn">Draw</button>
+          <button id="drawBtn" class="btn">抽一个</button>
         </article>
 
         <article class="toy-card reveal">
           <div class="mini-title">
-            <span>Reaction</span>
-            <b>Test</b>
+            <span>REACTION</span>
+            <b>反应测试</b>
           </div>
 
           <div id="reactionBox" class="reaction-box">
-            <strong>Ready?</strong>
-            <p>点击开始，变绿后再点。</p>
+            <strong>准备没</strong>
+            <p>点开始，变绿再点，别抢跑。</p>
           </div>
 
-          <button id="reactionBtn" class="btn">Start</button>
+          <button id="reactionBtn" class="btn">开始</button>
         </article>
 
         <article class="toy-card reveal">
           <div class="mini-title">
-            <span>Secret</span>
-            <b>Logo x5</b>
+            <span>SECRET</span>
+            <b>点五下</b>
           </div>
 
           <div class="secret-box">
-            <strong id="secretText">Nothing here.</strong>
-            <p>连续点左上角 logo 五次。</p>
+            <strong id="secretText">没东西。</strong>
+            <p>连续点左上角 logo 五次，闲得慌可以试试。</p>
           </div>
         </article>
       </div>
@@ -219,8 +219,8 @@
   </main>
 
   <footer class="footer">
-    <span>© <b id="year"></b> pipi_homepage</span>
-    <span>Powered by Worker + GitHub Issue</span>
+    <span>© <b id="year"></b> 先放这儿</span>
+    <span>Worker + GitHub Issue，能用就行</span>
   </footer>
 
   <script src="./app.js"></script>
