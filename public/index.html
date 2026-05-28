@@ -3,732 +3,226 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pipi pupu · 个人空间</title>
-  <meta name="description" content="一个不普通、不脏乱、不模板化的个人网页。" />
-  <style>
-    :root {
-      --bg: #08090d;
-      --bg2: #11131b;
-      --text: #f4f1ea;
-      --muted: #a7a0b7;
-      --line: rgba(255,255,255,.13);
-      --card: rgba(255,255,255,.07);
-      --card2: rgba(255,255,255,.1);
-      --pink: #ff4fd8;
-      --cyan: #62e8ff;
-      --lime: #d7ff63;
-      --orange: #ffae42;
-      --purple: #9b7cff;
-      --shadow: 0 24px 80px rgba(0,0,0,.45);
-    }
-
-    * { box-sizing: border-box; }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      color: var(--text);
-      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-      background:
-        radial-gradient(circle at 15% 10%, rgba(255,79,216,.32), transparent 28%),
-        radial-gradient(circle at 82% 22%, rgba(98,232,255,.24), transparent 30%),
-        radial-gradient(circle at 50% 88%, rgba(215,255,99,.13), transparent 28%),
-        linear-gradient(135deg, #08090d 0%, #121420 54%, #07080c 100%);
-      overflow-x: hidden;
-    }
-
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      background-image:
-        linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
-      background-size: 46px 46px;
-      mask-image: radial-gradient(circle at center, black 0, transparent 78%);
-      z-index: -3;
-    }
-
-    body::after {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      background: repeating-linear-gradient(
-        0deg,
-        rgba(255,255,255,.025) 0,
-        rgba(255,255,255,.025) 1px,
-        transparent 1px,
-        transparent 4px
-      );
-      mix-blend-mode: overlay;
-      opacity: .45;
-      z-index: 10;
-    }
-
-    a { color: inherit; text-decoration: none; }
-
-    .noise {
-      position: fixed;
-      inset: -80px;
-      z-index: -2;
-      opacity: .18;
-      background:
-        radial-gradient(circle at 20% 30%, white 0 1px, transparent 1px),
-        radial-gradient(circle at 70% 40%, white 0 1px, transparent 1px),
-        radial-gradient(circle at 42% 74%, white 0 1px, transparent 1px);
-      background-size: 180px 180px, 230px 230px, 120px 120px;
-      animation: drift 16s linear infinite;
-    }
-
-    @keyframes drift {
-      from { transform: translate3d(0, 0, 0) rotate(0deg); }
-      to { transform: translate3d(70px, -40px, 0) rotate(2deg); }
-    }
-
-    .blob {
-      position: fixed;
-      width: 34vw;
-      height: 34vw;
-      min-width: 280px;
-      min-height: 280px;
-      border-radius: 999px;
-      filter: blur(34px);
-      opacity: .48;
-      z-index: -1;
-      animation: float 10s ease-in-out infinite alternate;
-    }
-
-    .blob.one { left: -10vw; top: 22vh; background: rgba(255,79,216,.42); }
-    .blob.two { right: -8vw; top: 48vh; background: rgba(98,232,255,.32); animation-delay: -3s; }
-
-    @keyframes float {
-      from { transform: translateY(-18px) scale(.96); }
-      to { transform: translateY(28px) scale(1.06); }
-    }
-
-    .wrap {
-      width: min(1120px, calc(100% - 36px));
-      margin: 0 auto;
-    }
-
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      backdrop-filter: blur(20px);
-      background: rgba(8, 9, 13, .62);
-      border-bottom: 1px solid var(--line);
-    }
-
-    .nav {
-      height: 72px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 18px;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-weight: 900;
-      letter-spacing: -.04em;
-    }
-
-    .mark {
-      width: 38px;
-      height: 38px;
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      background:
-        linear-gradient(135deg, rgba(255,79,216,.95), rgba(98,232,255,.88)),
-        #fff;
-      box-shadow: 0 0 36px rgba(255,79,216,.28);
-      transform: rotate(-8deg);
-    }
-
-    .links {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .links a {
-      padding: 10px 12px;
-      border: 1px solid transparent;
-      border-radius: 999px;
-      transition: .2s ease;
-    }
-
-    .links a:hover {
-      color: var(--text);
-      background: rgba(255,255,255,.08);
-      border-color: var(--line);
-    }
-
-    .hero {
-      min-height: calc(100vh - 72px);
-      display: grid;
-      grid-template-columns: 1.15fr .85fr;
-      gap: 34px;
-      align-items: center;
-      padding: 72px 0 56px;
-    }
-
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--muted);
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 9px 13px;
-      background: rgba(255,255,255,.06);
-      box-shadow: var(--shadow);
-      margin-bottom: 22px;
-    }
-
-    .dot {
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
-      background: var(--lime);
-      box-shadow: 0 0 18px var(--lime);
-    }
-
-    h1 {
-      margin: 0;
-      font-size: clamp(58px, 10vw, 132px);
-      line-height: .84;
-      letter-spacing: -.09em;
-      max-width: 780px;
-    }
-
-    .gradient-text {
-      display: inline-block;
-      color: transparent;
-      background: linear-gradient(90deg, var(--text), var(--cyan), var(--pink), var(--lime));
-      background-clip: text;
-      -webkit-background-clip: text;
-      filter: drop-shadow(0 12px 38px rgba(255,79,216,.18));
-    }
-
-    .intro {
-      margin: 28px 0 0;
-      color: #d5d0df;
-      font-size: clamp(17px, 2vw, 22px);
-      line-height: 1.72;
-      max-width: 680px;
-    }
-
-    .actions {
-      margin-top: 34px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 14px;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 48px;
-      padding: 0 18px;
-      border-radius: 16px;
-      font-weight: 800;
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,.08);
-      transition: transform .2s ease, background .2s ease, border-color .2s ease;
-    }
-
-    .btn:hover { transform: translateY(-3px); border-color: rgba(255,255,255,.32); }
-    .btn.primary { background: linear-gradient(135deg, rgba(255,79,216,.96), rgba(98,232,255,.9)); color: #050609; border-color: transparent; }
-
-    .poster {
-      position: relative;
-      min-height: 560px;
-      border: 1px solid var(--line);
-      border-radius: 42px;
-      background:
-        linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,.05)),
-        rgba(255,255,255,.06);
-      box-shadow: var(--shadow);
-      overflow: hidden;
-    }
-
-    .poster::before {
-      content: "";
-      position: absolute;
-      inset: 24px;
-      border-radius: 30px;
-      border: 1px solid rgba(255,255,255,.16);
-      background:
-        radial-gradient(circle at 40% 24%, rgba(255,255,255,.25), transparent 22%),
-        linear-gradient(135deg, rgba(255,79,216,.18), rgba(98,232,255,.1));
-    }
-
-    .orbit {
-      position: absolute;
-      width: 280px;
-      height: 280px;
-      border: 1px dashed rgba(255,255,255,.22);
-      border-radius: 50%;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      animation: spin 20s linear infinite;
-    }
-
-    .orbit::before, .orbit::after {
-      content: "";
-      position: absolute;
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      background: var(--lime);
-      box-shadow: 0 0 24px var(--lime);
-      left: 38px;
-      top: 24px;
-    }
-
-    .orbit::after {
-      width: 15px;
-      height: 15px;
-      background: var(--pink);
-      box-shadow: 0 0 24px var(--pink);
-      left: auto;
-      top: auto;
-      right: 22px;
-      bottom: 52px;
-    }
-
-    @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
-
-    .face {
-      position: absolute;
-      left: 50%;
-      top: 48%;
-      transform: translate(-50%, -50%) rotate(-4deg);
-      width: 230px;
-      aspect-ratio: 1;
-      border-radius: 43% 57% 52% 48% / 45% 41% 59% 55%;
-      background:
-        radial-gradient(circle at 35% 38%, #090a0f 0 7px, transparent 8px),
-        radial-gradient(circle at 65% 38%, #090a0f 0 7px, transparent 8px),
-        radial-gradient(ellipse at 50% 66%, rgba(8,9,13,.95) 0 22px, transparent 23px),
-        linear-gradient(135deg, var(--cyan), var(--pink) 52%, var(--orange));
-      box-shadow: 0 30px 80px rgba(255,79,216,.26);
-    }
-
-    .label-card {
-      position: absolute;
-      padding: 14px 16px;
-      border: 1px solid var(--line);
-      border-radius: 20px;
-      background: rgba(8,9,13,.58);
-      backdrop-filter: blur(16px);
-      color: #efeaf7;
-      box-shadow: 0 20px 60px rgba(0,0,0,.28);
-      font-weight: 800;
-    }
-
-    .label-card.one { left: 24px; top: 32px; transform: rotate(-3deg); }
-    .label-card.two { right: 26px; top: 110px; transform: rotate(5deg); }
-    .label-card.three { left: 42px; bottom: 58px; transform: rotate(4deg); }
-    .label-card.four { right: 28px; bottom: 32px; transform: rotate(-4deg); }
-
-    section { padding: 92px 0; }
-
-    .section-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: end;
-      gap: 24px;
-      margin-bottom: 24px;
-    }
-
-    h2 {
-      margin: 0;
-      font-size: clamp(34px, 5vw, 68px);
-      line-height: .95;
-      letter-spacing: -.06em;
-    }
-
-    .section-note {
-      color: var(--muted);
-      max-width: 420px;
-      line-height: 1.7;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-    }
-
-    .card {
-      position: relative;
-      min-height: 220px;
-      padding: 24px;
-      border: 1px solid var(--line);
-      border-radius: 28px;
-      background: var(--card);
-      box-shadow: 0 18px 60px rgba(0,0,0,.22);
-      overflow: hidden;
-      transition: transform .22s ease, background .22s ease, border-color .22s ease;
-    }
-
-    .card:hover {
-      transform: translateY(-6px) rotate(-.6deg);
-      background: var(--card2);
-      border-color: rgba(255,255,255,.27);
-    }
-
-    .card::after {
-      content: "";
-      position: absolute;
-      right: -44px;
-      top: -44px;
-      width: 120px;
-      height: 120px;
-      border-radius: 999px;
-      background: rgba(255,79,216,.18);
-      filter: blur(4px);
-    }
-
-    .card:nth-child(2)::after { background: rgba(98,232,255,.18); }
-    .card:nth-child(3)::after { background: rgba(215,255,99,.16); }
-    .card:nth-child(4)::after { background: rgba(155,124,255,.18); }
-
-    .num {
-      color: var(--muted);
-      font-weight: 900;
-      margin-bottom: 36px;
-    }
-
-    .card h3 {
-      position: relative;
-      margin: 0 0 12px;
-      font-size: 25px;
-      letter-spacing: -.04em;
-      z-index: 1;
-    }
-
-    .card p {
-      position: relative;
-      margin: 0;
-      color: #cbc5d8;
-      line-height: 1.72;
-      z-index: 1;
-    }
-
-    .wide { grid-column: span 2; }
-
-    .terminal {
-      border: 1px solid var(--line);
-      border-radius: 30px;
-      overflow: hidden;
-      background: rgba(3,4,7,.72);
-      box-shadow: var(--shadow);
-    }
-
-    .bar {
-      height: 46px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 0 16px;
-      border-bottom: 1px solid var(--line);
-      background: rgba(255,255,255,.06);
-    }
-
-    .pill { width: 12px; height: 12px; border-radius: 50%; background: var(--pink); }
-    .pill:nth-child(2) { background: var(--orange); }
-    .pill:nth-child(3) { background: var(--lime); }
-
-    .code {
-      padding: 28px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      color: #dbf7ff;
-      line-height: 1.95;
-      font-size: 15px;
-      overflow-x: auto;
-    }
-
-    .code .muted { color: #7e879f; }
-    .code .pink { color: var(--pink); }
-    .code .cyan { color: var(--cyan); }
-    .code .lime { color: var(--lime); }
-
-    .marquee {
-      margin: 30px 0 0;
-      display: flex;
-      overflow: hidden;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      background: rgba(255,255,255,.06);
-    }
-
-    .marquee-track {
-      display: flex;
-      gap: 12px;
-      white-space: nowrap;
-      padding: 12px;
-      animation: marquee 18s linear infinite;
-    }
-
-    .tag {
-      padding: 10px 14px;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      color: #ece8f5;
-      background: rgba(255,255,255,.07);
-      font-weight: 750;
-    }
-
-    @keyframes marquee { to { transform: translateX(-50%); } }
-
-    .contact {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
-
-    .contact-card {
-      padding: 28px;
-      border: 1px solid var(--line);
-      border-radius: 32px;
-      background: linear-gradient(135deg, rgba(255,255,255,.12), rgba(255,255,255,.05));
-      box-shadow: 0 18px 60px rgba(0,0,0,.22);
-    }
-
-    .contact-card h3 { margin: 0 0 12px; font-size: 30px; letter-spacing: -.04em; }
-    .contact-card p { margin: 0 0 20px; color: #cbc5d8; line-height: 1.7; }
-
-    footer {
-      padding: 36px 0 54px;
-      color: var(--muted);
-      border-top: 1px solid var(--line);
-    }
-
-    .footer-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-
-    .reveal {
-      opacity: 0;
-      transform: translateY(22px);
-      transition: .7s ease;
-    }
-
-    .reveal.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    @media (max-width: 880px) {
-      .hero, .contact { grid-template-columns: 1fr; }
-      .poster { min-height: 460px; }
-      .grid { grid-template-columns: 1fr; }
-      .wide { grid-column: auto; }
-      .section-head { display: block; }
-      .section-note { margin-top: 14px; }
-      .links { display: none; }
-      section { padding: 68px 0; }
-    }
-  </style>
+  <title>pipi_homepage</title>
+  <meta name="description" content="Steam 信息、留言板和一些小玩具。" />
+  <link rel="stylesheet" href="./style.css" />
 </head>
-<body>
-  <div class="noise"></div>
-  <div class="blob one"></div>
-  <div class="blob two"></div>
 
-  <header>
-    <div class="wrap nav">
-      <a class="brand" href="#top" aria-label="回到顶部">
-        <span class="mark"></span>
-        <span>pipi pupu</span>
-      </a>
-      <nav class="links" aria-label="页面导航">
-        <a href="#about">关于</a>
-        <a href="#things">我做什么</a>
-        <a href="#projects">项目</a>
-        <a href="#contact">联系</a>
-      </nav>
-    </div>
+<body>
+  <div class="bg-grid"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <header class="topbar">
+    <a class="logo" href="#top">
+      <span class="logo-mark"></span>
+      <span>pipi_homepage</span>
+    </a>
+
+    <nav>
+      <a href="#steam">Steam</a>
+      <a href="#guestbook">Guestbook</a>
+      <a href="#toys">Toys</a>
+      <a href="https://github.com/MUERJUN/pipi_homepage" target="_blank">GitHub</a>
+    </nav>
   </header>
 
   <main id="top">
-    <div class="wrap hero">
-      <div>
-        <div class="eyebrow reveal"><span class="dot"></span>正在施工，但不是工地风</div>
-        <h1 class="reveal">
-          一个<br />
-          <span class="gradient-text">不太正常</span><br />
-          的个人网页
+    <section class="hero">
+      <div class="hero-copy reveal">
+        <p class="chip">ONLINE / CLOUDFLARE WORKER</p>
+        <h1>
+          PIPI<br />
+          <span>CONTROL</span><br />
+          PANEL
         </h1>
-        <p class="intro reveal">
-          我不想把自己写成模板里的“热爱技术、积极向上”。这里更像一个入口：一点项目，一点想法，一点抽象，但保持干净、锐利、能看。
+        <p class="hero-desc">
+          Steam profile, guestbook, small toys, random modules.
+          This page is not finished. It is just online.
         </p>
-        <div class="actions reveal">
-          <a class="btn primary" href="#projects">看点东西</a>
-          <a class="btn" href="#contact">找我说话</a>
-        </div>
       </div>
 
-      <aside class="poster reveal" aria-label="抽象头像海报">
-        <div class="orbit"></div>
-        <div class="face"></div>
-        <div class="label-card one">NO TEMPLATE</div>
-        <div class="label-card two">CHAOS / CLEAN</div>
-        <div class="label-card three">MADE BY ME</div>
-        <div class="label-card four">ONLINE</div>
-      </aside>
-    </div>
-
-    <section id="about">
-      <div class="wrap">
-        <div class="section-head reveal">
-          <h2>先别急着定义我。</h2>
-          <p class="section-note">这里可以写你的个人介绍，不用太正式。比如你是学生、开发者、创作者，或者只是一个想把脑子里奇怪东西做出来的人。</p>
+      <div class="hero-panel reveal">
+        <div class="panel-header">
+          <span></span>
+          <span></span>
+          <span></span>
+          <b>site.status</b>
         </div>
-        <div class="terminal reveal">
-          <div class="bar"><span class="pill"></span><span class="pill"></span><span class="pill"></span></div>
-          <div class="code">
-            <span class="muted">const</span> me = {<br />
-            &nbsp;&nbsp;name: <span class="pink">"pipi pupu"</span>,<br />
-            &nbsp;&nbsp;style: <span class="cyan">"抽象，但不敷衍"</span>,<br />
-            &nbsp;&nbsp;likes: [<span class="lime">"AI"</span>, <span class="lime">"网页"</span>, <span class="lime">"游戏感"</span>, <span class="lime">"奇怪但好看的东西"</span>],<br />
-            &nbsp;&nbsp;status: <span class="pink">"还在升级中"</span><br />
-            };
+
+        <div class="status-list">
+          <div>
+            <small>Worker</small>
+            <strong>Online</strong>
+          </div>
+          <div>
+            <small>Steam API</small>
+            <strong id="steamApiStatus">Loading</strong>
+          </div>
+          <div>
+            <small>Guestbook</small>
+            <strong id="guestbookStatus">Loading</strong>
+          </div>
+          <div>
+            <small>Build</small>
+            <strong>Manual</strong>
           </div>
         </div>
       </div>
     </section>
 
-    <section id="things">
-      <div class="wrap">
-        <div class="section-head reveal">
-          <h2>我这里能放什么？</h2>
-          <p class="section-note">这页不是简历模板。它可以像一个小型展厅，把你做过、正在做、想做的东西都摆出来。</p>
-        </div>
+    <section id="steam" class="section">
+      <div class="section-title reveal">
+        <p>STEAM</p>
+        <h2>Gaming card.</h2>
+      </div>
 
-        <div class="grid">
-          <article class="card reveal">
-            <div class="num">01</div>
-            <h3>项目展示</h3>
-            <p>放你的网站、AI 项目、作业、工具、模型训练记录，别让它们躺在文件夹里发霉。</p>
-          </article>
+      <div class="steam-layout">
+        <article class="steam-card reveal">
+          <div class="steam-profile">
+            <div class="avatar-wrap">
+              <img id="steamAvatar" alt="Steam avatar" />
+            </div>
 
-          <article class="card reveal">
-            <div class="num">02</div>
-            <h3>个人介绍</h3>
-            <p>可以认真，也可以不那么认真。重点是看起来像你，而不是像复制粘贴。</p>
-          </article>
+            <div>
+              <p class="muted">Steam Profile</p>
+              <h3 id="steamName">Loading...</h3>
+              <p id="steamStatus" class="status-pill">Unknown</p>
+            </div>
+          </div>
 
-          <article class="card reveal">
-            <div class="num">03</div>
-            <h3>AI 入口</h3>
-            <p>你原来的聊天接口可以保留，做成一个隐藏房间，或者单独放到 /chat。</p>
-          </article>
+          <div class="steam-stats">
+            <div>
+              <small>Games</small>
+              <strong id="steamGameCount">--</strong>
+            </div>
+            <div>
+              <small>Total Hours</small>
+              <strong id="steamTotalHours">--</strong>
+            </div>
+          </div>
 
-          <article class="card wide reveal">
-            <div class="num">04</div>
-            <h3>作品墙</h3>
-            <p>图片、链接、视频、GitHub、笔记都能塞进来。视觉可以怪，但结构必须清楚。</p>
-          </article>
+          <a id="steamProfileLink" class="btn primary" target="_blank" href="#">
+            Open Steam
+          </a>
+        </article>
 
-          <article class="card reveal">
-            <div class="num">05</div>
-            <h3>联系入口</h3>
-            <p>邮箱、QQ、GitHub、B站、Instagram，想放什么放什么。</p>
-          </article>
-        </div>
+        <article class="games-card reveal">
+          <div class="mini-title">
+            <span>Recent</span>
+            <b>Last played</b>
+          </div>
+          <div id="recentGames" class="game-list">
+            <p class="empty">Loading recent games...</p>
+          </div>
+        </article>
 
-        <div class="marquee reveal" aria-hidden="true">
-          <div class="marquee-track">
-            <span class="tag">不普通</span><span class="tag">不丑</span><span class="tag">不企业官网</span><span class="tag">有点抽象</span><span class="tag">但能看懂</span><span class="tag">Cloudflare Worker</span>
-            <span class="tag">不普通</span><span class="tag">不丑</span><span class="tag">不企业官网</span><span class="tag">有点抽象</span><span class="tag">但能看懂</span><span class="tag">Cloudflare Worker</span>
+        <article class="games-card reveal">
+          <div class="mini-title">
+            <span>Top</span>
+            <b>Most played</b>
+          </div>
+          <div id="topGames" class="game-list">
+            <p class="empty">Loading top games...</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="guestbook" class="section">
+      <div class="section-title reveal">
+        <p>GUESTBOOK</p>
+        <h2>Leave a mark.</h2>
+      </div>
+
+      <div class="guestbook-layout">
+        <form id="messageForm" class="message-form reveal">
+          <label>
+            Name
+            <input id="messageName" maxlength="20" placeholder="匿名访客" />
+          </label>
+
+          <label>
+            Message
+            <textarea id="messageContent" maxlength="200" placeholder="写点什么，最多 200 字"></textarea>
+          </label>
+
+          <button class="btn primary" type="submit" id="sendMessageBtn">
+            Send message
+          </button>
+
+          <p id="messageHint" class="hint"></p>
+        </form>
+
+        <div class="message-wall reveal">
+          <div class="mini-title">
+            <span>Messages</span>
+            <b id="messageCount">0</b>
+          </div>
+
+          <div id="messageList" class="message-list">
+            <p class="empty">Loading messages...</p>
           </div>
         </div>
       </div>
     </section>
 
-    <section id="projects">
-      <div class="wrap">
-        <div class="section-head reveal">
-          <h2>项目先占位。</h2>
-          <p class="section-note">把下面三张卡换成你的真实项目。比如 AI 聊天网页、YOLOv8 火灾识别、课程作品、个人工具。</p>
-        </div>
-
-        <div class="grid">
-          <a class="card reveal" href="#">
-            <div class="num">PROJECT A</div>
-            <h3>AI 角色聊天</h3>
-            <p>一个基于 Worker API 的聊天页面，可以接 DashScope 或其他模型。</p>
-          </a>
-
-          <a class="card reveal" href="#">
-            <div class="num">PROJECT B</div>
-            <h3>火灾识别系统</h3>
-            <p>YOLOv8、环境数据、风险预测。这里可以放演示图和项目说明。</p>
-          </a>
-
-          <a class="card reveal" href="#">
-            <div class="num">PROJECT C</div>
-            <h3>随便但有用的工具</h3>
-            <p>任何你做过的小工具都能放。小项目也可以有很强的存在感。</p>
-          </a>
-        </div>
+    <section id="toys" class="section">
+      <div class="section-title reveal">
+        <p>TOYS</p>
+        <h2>Small things.</h2>
       </div>
-    </section>
 
-    <section id="contact">
-      <div class="wrap contact">
-        <div class="contact-card reveal">
-          <h3>想找我？</h3>
-          <p>这里放你的联系方式。你可以改成邮箱、QQ、GitHub、微信二维码页面，或者一个联系表单。</p>
-          <a class="btn primary" href="mailto:2229106370@qq.com">发邮件</a>
-        </div>
-        <div class="contact-card reveal">
-          <h3>隐藏房间</h3>
-          <p>如果你想保留原来的 AI 聊天，可以把聊天页放到 /chat，首页就做个人主页。</p>
-          <a class="btn" href="/chat">进入 /chat</a>
-        </div>
+      <div class="toy-grid">
+        <article class="toy-card reveal">
+          <div class="mini-title">
+            <span>Daily draw</span>
+            <b>Card</b>
+          </div>
+
+          <div id="drawResult" class="draw-result">
+            <small>Click to draw</small>
+            <strong>?</strong>
+            <p>今日状态未知</p>
+          </div>
+
+          <button id="drawBtn" class="btn">Draw</button>
+        </article>
+
+        <article class="toy-card reveal">
+          <div class="mini-title">
+            <span>Reaction</span>
+            <b>Test</b>
+          </div>
+
+          <div id="reactionBox" class="reaction-box">
+            <strong>Ready?</strong>
+            <p>点击开始，变绿后再点。</p>
+          </div>
+
+          <button id="reactionBtn" class="btn">Start</button>
+        </article>
+
+        <article class="toy-card reveal">
+          <div class="mini-title">
+            <span>Secret</span>
+            <b>Logo x5</b>
+          </div>
+
+          <div class="secret-box">
+            <strong id="secretText">Nothing here.</strong>
+            <p>连续点左上角 logo 五次。</p>
+          </div>
+        </article>
       </div>
     </section>
   </main>
 
-  <footer>
-    <div class="wrap footer-row">
-      <span>© <span id="year"></span> pipi pupu</span>
-      <span>不要普通，也不要乱做。</span>
-    </div>
+  <footer class="footer">
+    <span>© <b id="year"></b> pipi_homepage</span>
+    <span>Powered by Worker + GitHub Issue</span>
   </footer>
 
-  <script>
-    document.getElementById("year").textContent = new Date().getFullYear();
-
-    const observer = new IntersectionObserver((entries) => {
-      for (const entry of entries) {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("show");
-          observer.unobserve(entry.target);
-        }
-      }
-    }, { threshold: 0.16 });
-
-    document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
-  </script>
+  <script src="./app.js"></script>
 </body>
 </html>
