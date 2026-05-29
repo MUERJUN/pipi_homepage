@@ -18,6 +18,14 @@ export default {
       return handlePostMessage(request, env);
     }
 
+    if (url.pathname === "/api/scores" && request.method === "GET") {
+      return handleGetScores(env);
+    }
+
+    if (url.pathname === "/api/scores" && request.method === "POST") {
+      return handlePostScore(request, env);
+    }
+
     if (env.ASSETS) {
       return env.ASSETS.fetch(request);
     }
@@ -164,11 +172,11 @@ function steamStatus(state) {
 
 async function handleGetMessages(env) {
   try {
-    checkGuestbookEnv(env);
+    checkGitHubEnv(env);
 
     const comments = await githubRequest(
       env,
-      `/repos/${env.GITHUB_OWNER}/${env.GITHUB_REPO}/issues/${env.GUESTBOOK_ISSUE_NUMBER}/comments?per_page=50`
+      `/repos/${env.GITHUB_OWNER}/${env.GITHUB_REPO}/issues/${env.GUESTBOOK_ISSUE_NUMBER}/comments?per_page=80`
     );
 
     const messages = comments
@@ -184,7 +192,7 @@ async function handleGetMessages(env) {
 
 async function handlePostMessage(request, env) {
   try {
-    checkGuestbookEnv(env);
+    checkGitHubEnv(env);
 
     const body = await request.json().catch(() => ({}));
 
@@ -221,7 +229,66 @@ async function handlePostMessage(request, env) {
   }
 }
 
-function checkGuestbookEnv(env) {
+async function handleGetScores(env) {
+  try {
+    checkGitHubEnv(env);
+
+    const comments = await githubRequest(
+      env,
+      `/repos/${env.GITHUB_OWNER}/${env.GITHUB_REPO}/issues/${env.GUESTBOOK_ISSUE_NUMBER}/comments?per_page=100`
+    );
+
+    const scores = comments
+      .map(parseTetrisScoreComment)
+      .filter(Boolean)
+      .sort((a, b) => b.score - a.score || new Date(a.createdAt) - new Date(b.createdAt))
+      .slice(0, 10);
+
+    return json({ scores });
+  } catch (err) {
+    return json({ error: err.message || "排行榜加载失败" }, 500);
+  }
+}
+
+async function handlePostScore(request, env) {
+  try {
+    checkGitHubEnv(env);
+
+    const body = await request.json().catch(() => ({}));
+    const name = sanitizeText(body.name || "匿名玩家", 20);
+    const score = Math.floor(Number(body.score || 0));
+
+    if (!Number.isFinite(score) || score <= 0) {
+      return json({ error: "分数不太对" }, 400);
+    }
+
+    const payload = {
+      name,
+      score: Math.min(score, 999999),
+      time: new Date().toISOString()
+    };
+
+    const commentBody =
+      "```tetris-score\n" +
+      JSON.stringify(payload) +
+      "\n```";
+
+    await githubRequest(
+      env,
+      `/repos/${env.GITHUB_OWNER}/${env.GITHUB_REPO}/issues/${env.GUESTBOOK_ISSUE_NUMBER}/comments`,
+      {
+        method: "POST",
+        body: JSON.stringify({ body: commentBody })
+      }
+    );
+
+    return json({ ok: true });
+  } catch (err) {
+    return json({ error: err.message || "分数上传失败" }, 500);
+  }
+}
+
+function checkGitHubEnv(env) {
   if (!env.GITHUB_OWNER) {
     throw new Error("GITHUB_OWNER 未配置");
   }
@@ -274,6 +341,29 @@ function parseGuestbookComment(comment) {
       id: comment.id,
       name: sanitizeText(data.name || "匿名访客", 20),
       content: sanitizeText(data.content || "", 200),
+      createdAt: data.time || comment.created_at
+    };
+  } catch {
+    return null;
+  }
+}
+
+function parseTetrisScoreComment(comment) {
+  const body = String(comment.body || "");
+  const match = body.match(/```tetris-score\s*([\s\S]*?)\s*```/);
+
+  if (!match) return null;
+
+  try {
+    const data = JSON.parse(match[1]);
+    const score = Math.floor(Number(data.score || 0));
+
+    if (!score || score <= 0) return null;
+
+    return {
+      id: comment.id,
+      name: sanitizeText(data.name || "匿名玩家", 20),
+      score,
       createdAt: data.time || comment.created_at
     };
   } catch {
