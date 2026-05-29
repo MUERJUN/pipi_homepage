@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>先放这儿</title>
-  <meta name="description" content="一个能看 Steam、能留言、能点几下的小页面。" />
+  <meta name="description" content="Steam、留言板、小玩具。" />
   <link rel="stylesheet" href="./style.css" />
 </head>
 
@@ -14,9 +14,12 @@
   <div class="orb orb-2"></div>
 
   <header class="topbar">
-    <a class="logo" href="#top">
-      <span class="logo-mark"></span>
-      <span>先放这儿</span>
+    <a class="profile-brand" href="#top">
+      <img id="navSteamAvatar" class="nav-avatar" alt="Steam 头像" />
+      <span class="brand-text">
+        <strong id="navSteamName">加载中</strong>
+        <small id="navSteamStatus">Steam</small>
+      </span>
     </a>
 
     <nav>
@@ -28,50 +31,26 @@
   </header>
 
   <main id="top">
-    <section class="hero">
-      <div class="hero-copy reveal">
-        <p class="chip">ONLINE / 能跑就行</p>
-        <h1>
-          先放<br />
-          <span>这儿</span><br />
-          别问
-        </h1>
-        <p class="hero-desc">
-          这里先塞点能看的东西。Steam、留言板、几个小玩具。
-          做得完就继续做，做不完就先这样。
-        </p>
+    <section class="site-summary">
+      <div class="summary-card reveal">
+        <small>Worker</small>
+        <strong>没死</strong>
       </div>
-
-      <div class="hero-panel reveal">
-        <div class="panel-header">
-          <span></span>
-          <span></span>
-          <span></span>
-          <b>站点状态</b>
-        </div>
-
-        <div class="status-list">
-          <div>
-            <small>Worker</small>
-            <strong>没死</strong>
-          </div>
-          <div>
-            <small>Steam</small>
-            <strong id="steamApiStatus">加载中</strong>
-          </div>
-          <div>
-            <small>留言板</small>
-            <strong id="guestbookStatus">加载中</strong>
-          </div>
-          <div>
-            <small>构建方式</small>
-            <strong>手搓</strong>
-          </div>
-        </div>
+      <div class="summary-card reveal">
+        <small>Steam</small>
+        <strong id="steamApiStatus">加载中</strong>
+      </div>
+      <div class="summary-card reveal">
+        <small>留言板</small>
+        <strong id="guestbookStatus">加载中</strong>
+      </div>
+      <div class="summary-card reveal">
+        <small>构建方式</small>
+        <strong>手搓</strong>
       </div>
     </section>
 
-    <section id="steam" class="section">
+    <section id="steam" class="section first-section">
       <div class="section-title reveal">
         <p>STEAM</p>
         <h2>游戏痕迹。</h2>
@@ -197,7 +176,7 @@
 
           <div id="reactionBox" class="reaction-box">
             <strong>准备没</strong>
-            <p>点开始，变绿再点，别抢跑。</p>
+            <p>开始</p>
           </div>
 
           <button id="reactionBtn" class="btn">开始</button>
@@ -211,7 +190,7 @@
 
           <div class="secret-box">
             <strong id="secretText">没东西。</strong>
-            <p>连续点左上角 logo 五次，闲得慌可以试试。</p>
+            <p>？？？？？？</p>
           </div>
         </article>
       </div>
@@ -220,7 +199,7 @@
 
   <footer class="footer">
     <span>© <b id="year"></b> 先放这儿</span>
-    <span>Worker + GitHub Issue，能用就行</span>
+    <span>Worker + GitHub Issue</span>
   </footer>
 
   <script src="./app.js"></script>

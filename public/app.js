@@ -8,16 +8,16 @@ const state = {
 };
 
 const cards = [
-  { rarity: "N", title: "正常开机", text: "今天正常开机，先别想太多。" },
-  { rarity: "N", title: "能跑就行", text: "别管优不优雅，能跑已经很给面子了。" },
+  { rarity: "N", title: "正常开机", text: "今天正常开机" },
+  { rarity: "N", title: "能跑就行", text: "能跑已经很给面子了......" },
   { rarity: "R", title: "低电量", text: "有点虚，但不是不能用。" },
-  { rarity: "R", title: "何意味？", text: "看懂了算你厉害，我也不一定懂。" },
+  { rarity: "R", title: "何意味？", text: "？味意何" },
   { rarity: "R", title: "别问", text: "问就是还没做完。" },
   { rarity: "SR", title: "看啥呢", text: "来都来了，点两下再走。" },
-  { rarity: "SR", title: "干净混乱", text: "可以乱，但不能丑。" },
+  { rarity: "SR", title: "干净混乱", text: "还行吧" },
   { rarity: "SR", title: "施工中", text: "不是没做完，是正在生成。" },
   { rarity: "SSR", title: "网页活着", text: "管你这的那的，先来给我炒个菜。" },
-  { rarity: "SSR", title: "系统正常", text: "正常得有点不正常。" },
+  { rarity: "SSR", title: "系统正常", text: "系统不正常。" },
   { rarity: "UR", title: "没死呢", text: "没死呢，别想吃席了。" },
   { rarity: "UR", title: "不解释", text: "今天不解释，直接跳过。" },
 ];
@@ -57,12 +57,12 @@ function setupReveal() {
 }
 
 function setupSecret() {
-  const logo = $(".logo");
+  const brand = $(".profile-brand");
   const secretText = $("#secretText");
 
-  if (!logo) return;
+  if (!brand) return;
 
-  logo.addEventListener("click", () => {
+  brand.addEventListener("click", () => {
     state.logoClicks += 1;
 
     if (state.logoClicks >= 5) {
@@ -184,13 +184,14 @@ async function loadSteam() {
   } catch (err) {
     if (apiStatus) apiStatus.textContent = "炸了";
 
-    const steamName = $("#steamName");
-    const steamStatus = $("#steamStatus");
+    setText("#steamName", "Steam 没加载出来");
+    setText("#steamStatus", err.message || "未知错误");
+    setText("#navSteamName", "Steam 没加载出来");
+    setText("#navSteamStatus", "炸了");
+
     const recentGames = $("#recentGames");
     const topGames = $("#topGames");
 
-    if (steamName) steamName.textContent = "Steam 没加载出来";
-    if (steamStatus) steamStatus.textContent = err.message || "未知错误";
     if (recentGames) recentGames.innerHTML = `<p class="empty">Steam 信息加载失败。</p>`;
     if (topGames) topGames.innerHTML = `<p class="empty">Steam 信息加载失败。</p>`;
   }
@@ -199,28 +200,34 @@ async function loadSteam() {
 function renderSteam(data) {
   const profile = data.profile || {};
   const summary = data.summary || {};
+  const status = translateSteamStatus(profile.status);
 
-  const steamName = $("#steamName");
-  const steamStatus = $("#steamStatus");
-  const steamGameCount = $("#steamGameCount");
-  const steamTotalHours = $("#steamTotalHours");
+  setText("#steamName", profile.name || "未知玩家");
+  setText("#steamStatus", status);
+  setText("#steamGameCount", summary.gameCount ?? "--");
 
-  if (steamName) steamName.textContent = profile.name || "未知玩家";
-  if (steamStatus) steamStatus.textContent = translateSteamStatus(profile.status);
-  if (steamGameCount) steamGameCount.textContent = summary.gameCount ?? "--";
-  if (steamTotalHours) {
-    steamTotalHours.textContent =
-      summary.totalHours != null ? `${summary.totalHours} 小时` : "--";
-  }
+  const totalHours =
+    summary.totalHours != null ? `${summary.totalHours} 小时` : "--";
+  setText("#steamTotalHours", totalHours);
+
+  setText("#navSteamName", profile.name || "未知玩家");
+  setText("#navSteamStatus", status);
 
   const avatar = $("#steamAvatar");
-  if (avatar) {
-    avatar.src = profile.avatar || "";
-  }
+  if (avatar) avatar.src = profile.avatar || "";
+
+  const navAvatar = $("#navSteamAvatar");
+  if (navAvatar) navAvatar.src = profile.avatar || "";
 
   const link = $("#steamProfileLink");
   if (link) {
     link.href = profile.profileUrl || "https://steamcommunity.com/";
+  }
+
+  const brand = $(".profile-brand");
+  if (brand) {
+    brand.href = profile.profileUrl || "#top";
+    brand.target = "_blank";
   }
 
   renderGames("#recentGames", data.recent || [], "recent");
@@ -372,6 +379,11 @@ function renderMessages(messages) {
       `;
     })
     .join("");
+}
+
+function setText(selector, value) {
+  const el = $(selector);
+  if (el) el.textContent = value;
 }
 
 function setHint(text, type) {
