@@ -165,14 +165,25 @@
 
         <article class="toy-card reveal">
           <div class="mini-title">
-            <span>SECRET</span>
-            <b>点五下</b>
+            <span>BLOCKS</span>
+            <b>俄罗斯方块</b>
           </div>
 
-          <div class="secret-box">
-            <strong id="secretText">没东西。</strong>
-            <p>？？？？？？</p>
+          <div class="tetris-box">
+            <canvas id="tetrisCanvas" width="160" height="240"></canvas>
+
+            <div class="tetris-info">
+              <strong id="tetrisScore">0</strong>
+              <p>分数</p>
+            </div>
           </div>
+
+          <div class="tetris-actions">
+            <button id="tetrisStartBtn" class="btn">开始</button>
+            <button id="tetrisResetBtn" class="btn">重开</button>
+          </div>
+
+          <p class="toy-tip">方向键移动，↑ 旋转，↓ 加速。</p>
         </article>
       </div>
     </section>

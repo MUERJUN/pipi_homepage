@@ -206,6 +206,7 @@ small,
 .muted {
   color: var(--muted);
 }
+
 .section {
   padding: 76px 0;
 }
@@ -557,6 +558,53 @@ textarea:focus {
   border-color: rgba(255,95,109,.4);
 }
 
+.tetris-box {
+  min-height: 240px;
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 14px;
+  align-items: center;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: rgba(0,0,0,.18);
+  margin-bottom: 14px;
+}
+
+#tetrisCanvas {
+  width: 160px;
+  height: 240px;
+  border-radius: 14px;
+  background: rgba(0,0,0,.45);
+  border: 1px solid rgba(255,255,255,.12);
+  image-rendering: pixelated;
+}
+
+.tetris-info {
+  display: grid;
+  gap: 6px;
+  align-content: center;
+}
+
+.tetris-info strong {
+  font-size: 38px;
+  line-height: 1;
+  letter-spacing: -.06em;
+}
+
+.tetris-info p,
+.toy-tip {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.tetris-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 .footer {
   padding: 34px 0 52px;
   border-top: 1px solid var(--line);
@@ -583,6 +631,7 @@ body.secret-mode {
   --cyan: #ff4fd8;
   --lime: #5be7ff;
 }
+
 @media (max-width: 960px) {
   nav {
     display: none;
@@ -598,10 +647,12 @@ body.secret-mode {
     padding: 58px 0;
   }
 }
+
 @media (max-width: 520px) {
   .topbar {
     padding-inline: 16px;
   }
+
   .section,
   .footer {
     width: min(100% - 28px, 1120px);
@@ -623,5 +674,16 @@ body.secret-mode {
 
   .avatar-wrap img {
     border-radius: 19px;
+  }
+
+  .tetris-box {
+    grid-template-columns: 1fr;
+  }
+
+  #tetrisCanvas {
+    width: 100%;
+    max-width: 200px;
+    height: auto;
+    aspect-ratio: 2 / 3;
   }
 }

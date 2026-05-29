@@ -33,6 +33,7 @@ function init() {
   setupDraw();
   setupReaction();
   setupGuestbook();
+  setupTetris();
 
   loadSteam();
   loadMessages();
@@ -379,6 +380,239 @@ function renderMessages(messages) {
       `;
     })
     .join("");
+}
+
+function setupTetris() {
+  const canvas = $("#tetrisCanvas");
+  const startBtn = $("#tetrisStartBtn");
+  const resetBtn = $("#tetrisResetBtn");
+  const scoreEl = $("#tetrisScore");
+
+  if (!canvas || !startBtn || !resetBtn || !scoreEl) return;
+
+  const ctx = canvas.getContext("2d");
+  const cols = 10;
+  const rows = 15;
+  const size = 16;
+
+  let board = createBoard(rows, cols);
+  let piece = null;
+  let score = 0;
+  let timer = null;
+  let running = false;
+
+  const shapes = [
+    [[1, 1, 1, 1]],
+    [[1, 1], [1, 1]],
+    [[0, 1, 0], [1, 1, 1]],
+    [[1, 0, 0], [1, 1, 1]],
+    [[0, 0, 1], [1, 1, 1]],
+    [[1, 1, 0], [0, 1, 1]],
+    [[0, 1, 1], [1, 1, 0]],
+  ];
+
+  draw();
+
+  startBtn.addEventListener("click", () => {
+    if (running) return;
+
+    running = true;
+    if (!piece) piece = newPiece();
+
+    timer = setInterval(tick, 420);
+    startBtn.textContent = "进行中";
+  });
+
+  resetBtn.addEventListener("click", () => {
+    clearInterval(timer);
+    board = createBoard(rows, cols);
+    piece = newPiece();
+    score = 0;
+    running = false;
+    scoreEl.textContent = "0";
+    startBtn.textContent = "开始";
+    draw();
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (!piece) return;
+
+    if (["ArrowLeft", "ArrowRight", "ArrowDown", "ArrowUp"].includes(event.key)) {
+      event.preventDefault();
+    }
+
+    if (event.key === "ArrowLeft") {
+      move(-1, 0);
+    }
+
+    if (event.key === "ArrowRight") {
+      move(1, 0);
+    }
+
+    if (event.key === "ArrowDown") {
+      tick();
+    }
+
+    if (event.key === "ArrowUp") {
+      rotate();
+    }
+  });
+
+  function tick() {
+    if (!piece) return;
+
+    if (!move(0, 1)) {
+      mergePiece();
+      clearLines();
+      piece = newPiece();
+
+      if (collides(piece.x, piece.y, piece.shape)) {
+        clearInterval(timer);
+        running = false;
+        startBtn.textContent = "寄了";
+      }
+    }
+
+    draw();
+  }
+
+  function newPiece() {
+    const shape = shapes[Math.floor(Math.random() * shapes.length)];
+
+    return {
+      x: Math.floor(cols / 2) - Math.ceil(shape[0].length / 2),
+      y: 0,
+      shape,
+      color: randomBlockColor(),
+    };
+  }
+
+  function move(dx, dy) {
+    const nextX = piece.x + dx;
+    const nextY = piece.y + dy;
+
+    if (!collides(nextX, nextY, piece.shape)) {
+      piece.x = nextX;
+      piece.y = nextY;
+      draw();
+      return true;
+    }
+
+    return false;
+  }
+
+  function rotate() {
+    const rotated = piece.shape[0].map((_, index) =>
+      piece.shape.map((row) => row[index]).reverse()
+    );
+
+    if (!collides(piece.x, piece.y, rotated)) {
+      piece.shape = rotated;
+      draw();
+    }
+  }
+
+  function collides(x, y, shape) {
+    for (let row = 0; row < shape.length; row += 1) {
+      for (let col = 0; col < shape[row].length; col += 1) {
+        if (!shape[row][col]) continue;
+
+        const boardX = x + col;
+        const boardY = y + row;
+
+        if (boardX < 0 || boardX >= cols || boardY >= rows) {
+          return true;
+        }
+
+        if (boardY >= 0 && board[boardY][boardX]) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  function mergePiece() {
+    for (let row = 0; row < piece.shape.length; row += 1) {
+      for (let col = 0; col < piece.shape[row].length; col += 1) {
+        if (!piece.shape[row][col]) continue;
+
+        const boardX = piece.x + col;
+        const boardY = piece.y + row;
+
+        if (boardY >= 0) {
+          board[boardY][boardX] = piece.color;
+        }
+      }
+    }
+  }
+
+  function clearLines() {
+    let cleared = 0;
+
+    board = board.filter((row) => {
+      const full = row.every(Boolean);
+      if (full) cleared += 1;
+      return !full;
+    });
+
+    while (board.length < rows) {
+      board.unshift(Array(cols).fill(0));
+    }
+
+    if (cleared) {
+      score += cleared * 100;
+      scoreEl.textContent = String(score);
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "rgba(0,0,0,.28)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    drawBoard();
+
+    if (piece) {
+      drawShape(piece.x, piece.y, piece.shape, piece.color);
+    }
+  }
+
+  function drawBoard() {
+    for (let row = 0; row < rows; row += 1) {
+      for (let col = 0; col < cols; col += 1) {
+        const color = board[row][col];
+        if (color) drawBlock(col, row, color);
+      }
+    }
+  }
+
+  function drawShape(x, y, shape, color) {
+    for (let row = 0; row < shape.length; row += 1) {
+      for (let col = 0; col < shape[row].length; col += 1) {
+        if (shape[row][col]) {
+          drawBlock(x + col, y + row, color);
+        }
+      }
+    }
+  }
+
+  function drawBlock(x, y, color) {
+    ctx.fillStyle = color;
+    ctx.fillRect(x * size + 1, y * size + 1, size - 2, size - 2);
+    ctx.strokeStyle = "rgba(255,255,255,.28)";
+    ctx.strokeRect(x * size + 1, y * size + 1, size - 2, size - 2);
+  }
+}
+
+function createBoard(rows, cols) {
+  return Array.from({ length: rows }, () => Array(cols).fill(0));
+}
+
+function randomBlockColor() {
+  const colors = ["#ff4fd8", "#5be7ff", "#d9ff63", "#ffb347", "#9b7cff"];
+  return colors[Math.floor(Math.random() * colors.length)];
 }
 
 function setText(selector, value) {
