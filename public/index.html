@@ -14,7 +14,7 @@
   <div class="orb orb-2"></div>
 
   <header class="topbar">
-    <a class="profile-brand" href="#top">
+    <a class="profile-brand" href="#top" aria-label="Steam 主页">
       <img id="navSteamAvatar" class="nav-avatar" alt="Steam 头像" />
       <span class="brand-text">
         <strong id="navSteamName">加载中</strong>
@@ -25,20 +25,20 @@
     <nav>
       <a href="#steam">Steam</a>
       <a href="#guestbook">留言板</a>
-      <a href="#toys">小游戏？要不要加个俄罗斯方块呢？</a>
+      <a href="#toys">小游戏</a>
       <a href="https://github.com/MUERJUN/pipi_homepage" target="_blank">GitHub</a>
     </nav>
   </header>
 
   <main id="top">
     <section id="steam" class="section first-section">
-      <div class="section-title reveal">
+      <div class="section-title reveal compact-title">
         <p>STEAM</p>
         <h2>Steam</h2>
       </div>
 
       <div class="steam-layout">
-        <article class="steam-card reveal">
+        <article class="steam-card reveal main-card">
           <div class="steam-profile">
             <div class="avatar-wrap">
               <img id="steamAvatar" alt="Steam 头像" />
@@ -90,7 +90,7 @@
     </section>
 
     <section id="guestbook" class="section">
-      <div class="section-title reveal">
+      <div class="section-title reveal compact-title">
         <p>GUESTBOOK</p>
         <h2>来都来了。</h2>
       </div>
@@ -128,7 +128,7 @@
     </section>
 
     <section id="toys" class="section">
-      <div class="section-title reveal">
+      <div class="section-title reveal compact-title">
         <p>TOYS</p>
         <h2>没啥用，但能点。</h2>
       </div>
@@ -163,7 +163,7 @@
           <button id="reactionBtn" class="btn">开始</button>
         </article>
 
-        <article class="toy-card reveal">
+        <article class="toy-card tetris-card reveal">
           <div class="mini-title">
             <span>BLOCKS</span>
             <b>俄罗斯方块</b>
@@ -172,18 +172,33 @@
           <div class="tetris-box">
             <canvas id="tetrisCanvas" width="160" height="240"></canvas>
 
-            <div class="tetris-info">
-              <strong id="tetrisScore">0</strong>
-              <p>分数</p>
+            <div class="tetris-side">
+              <div class="tetris-info">
+                <strong id="tetrisScore">0</strong>
+                <p>分数</p>
+              </div>
+
+              <div class="tetris-actions">
+                <button id="tetrisStartBtn" class="btn">开始</button>
+                <button id="tetrisResetBtn" class="btn">重开</button>
+                <button id="tetrisSubmitBtn" class="btn" disabled>记我一笔</button>
+              </div>
             </div>
           </div>
 
-          <div class="tetris-actions">
-            <button id="tetrisStartBtn" class="btn">开始</button>
-            <button id="tetrisResetBtn" class="btn">重开</button>
-          </div>
-
           <p class="toy-tip">方向键移动，↑ 旋转，↓ 加速。</p>
+          <p id="tetrisHint" class="hint"></p>
+
+          <div class="leaderboard">
+            <div class="mini-title tight">
+              <span>RANK</span>
+              <b>排行榜</b>
+            </div>
+
+            <div id="tetrisLeaderboard" class="leaderboard-list">
+              <p class="empty">排行榜加载中...</p>
+            </div>
+          </div>
         </article>
       </div>
     </section>
