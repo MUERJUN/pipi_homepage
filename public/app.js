@@ -5,6 +5,8 @@ const state = {
   reactionStart: 0,
   reactionArmed: false,
   logoClicks: 0,
+  lastTetrisScore: 0,
+  tetrisSubmitted: false,
 };
 
 const cards = [
@@ -37,6 +39,7 @@ function init() {
 
   loadSteam();
   loadMessages();
+  loadTetrisScores();
 }
 
 function setupReveal() {
@@ -59,7 +62,6 @@ function setupReveal() {
 
 function setupSecret() {
   const brand = $(".profile-brand");
-  const secretText = $("#secretText");
 
   if (!brand) return;
 
@@ -69,12 +71,6 @@ function setupSecret() {
     if (state.logoClicks >= 5) {
       document.body.classList.toggle("secret-mode");
       state.logoClicks = 0;
-
-      if (secretText) {
-        secretText.textContent = document.body.classList.contains("secret-mode")
-          ? "行，被你点出来了。"
-          : "关了，当没发生过。";
-      }
     }
   });
 }
@@ -169,8 +165,6 @@ function reactionComment(ms) {
 }
 
 async function loadSteam() {
-  const apiStatus = $("#steamApiStatus");
-
   try {
     const res = await fetch("/api/steam");
     const data = await res.json();
@@ -180,11 +174,7 @@ async function loadSteam() {
     }
 
     renderSteam(data);
-
-    if (apiStatus) apiStatus.textContent = "能用";
   } catch (err) {
-    if (apiStatus) apiStatus.textContent = "炸了";
-
     setText("#steamName", "Steam 没加载出来");
     setText("#steamStatus", err.message || "未知错误");
     setText("#navSteamName", "Steam 没加载出来");
@@ -331,8 +321,6 @@ function setupGuestbook() {
 }
 
 async function loadMessages() {
-  const status = $("#guestbookStatus");
-
   try {
     const res = await fetch("/api/messages");
     const data = await res.json();
@@ -342,11 +330,7 @@ async function loadMessages() {
     }
 
     renderMessages(data.messages || []);
-
-    if (status) status.textContent = "能用";
   } catch (err) {
-    if (status) status.textContent = "炸了";
-
     const list = $("#messageList");
     if (list) {
       list.innerHTML = `<p class="empty">留言加载失败：${escapeHTML(err.message || "未知错误")}</p>`;
@@ -386,9 +370,11 @@ function setupTetris() {
   const canvas = $("#tetrisCanvas");
   const startBtn = $("#tetrisStartBtn");
   const resetBtn = $("#tetrisResetBtn");
+  const submitBtn = $("#tetrisSubmitBtn");
   const scoreEl = $("#tetrisScore");
+  const hint = $("#tetrisHint");
 
-  if (!canvas || !startBtn || !resetBtn || !scoreEl) return;
+  if (!canvas || !startBtn || !resetBtn || !submitBtn || !scoreEl) return;
 
   const ctx = canvas.getContext("2d");
   const cols = 10;
@@ -417,6 +403,9 @@ function setupTetris() {
     if (running) return;
 
     running = true;
+    state.tetrisSubmitted = false;
+    submitBtn.disabled = true;
+    if (hint) hint.textContent = "";
     if (!piece) piece = newPiece();
 
     timer = setInterval(tick, 420);
@@ -428,10 +417,49 @@ function setupTetris() {
     board = createBoard(rows, cols);
     piece = newPiece();
     score = 0;
+    state.lastTetrisScore = 0;
+    state.tetrisSubmitted = false;
     running = false;
     scoreEl.textContent = "0";
     startBtn.textContent = "开始";
+    submitBtn.textContent = "记我一笔";
+    submitBtn.disabled = true;
+    if (hint) hint.textContent = "";
     draw();
+  });
+
+  submitBtn.addEventListener("click", async () => {
+    if (!state.lastTetrisScore || state.tetrisSubmitted) return;
+
+    const name = $("#navSteamName")?.textContent?.trim() || "匿名玩家";
+    submitBtn.disabled = true;
+    submitBtn.textContent = "记着...";
+    if (hint) hint.textContent = "正在写排行榜。";
+
+    try {
+      const res = await fetch("/api/scores", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, score: state.lastTetrisScore }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "上传失败");
+      }
+
+      state.tetrisSubmitted = true;
+      submitBtn.textContent = "记上了";
+      if (hint) hint.textContent = "记上了。";
+      await loadTetrisScores();
+    } catch (err) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "记我一笔";
+      if (hint) hint.textContent = err.message || "排行榜炸了。";
+    }
   });
 
   document.addEventListener("keydown", (event) => {
@@ -441,21 +469,10 @@ function setupTetris() {
       event.preventDefault();
     }
 
-    if (event.key === "ArrowLeft") {
-      move(-1, 0);
-    }
-
-    if (event.key === "ArrowRight") {
-      move(1, 0);
-    }
-
-    if (event.key === "ArrowDown") {
-      tick();
-    }
-
-    if (event.key === "ArrowUp") {
-      rotate();
-    }
+    if (event.key === "ArrowLeft") move(-1, 0);
+    if (event.key === "ArrowRight") move(1, 0);
+    if (event.key === "ArrowDown") tick();
+    if (event.key === "ArrowUp") rotate();
   });
 
   function tick() {
@@ -469,7 +486,10 @@ function setupTetris() {
       if (collides(piece.x, piece.y, piece.shape)) {
         clearInterval(timer);
         running = false;
+        state.lastTetrisScore = score;
         startBtn.textContent = "寄了";
+        submitBtn.disabled = score <= 0;
+        if (hint) hint.textContent = score > 0 ? "要不要记一笔？" : "零分就别记了吧。";
       }
     }
 
@@ -601,9 +621,50 @@ function setupTetris() {
   function drawBlock(x, y, color) {
     ctx.fillStyle = color;
     ctx.fillRect(x * size + 1, y * size + 1, size - 2, size - 2);
-    ctx.strokeStyle = "rgba(255,255,255,.28)";
+    ctx.strokeStyle = "rgba(255,255,255,.24)";
     ctx.strokeRect(x * size + 1, y * size + 1, size - 2, size - 2);
   }
+}
+
+async function loadTetrisScores() {
+  const root = $("#tetrisLeaderboard");
+  if (!root) return;
+
+  try {
+    const res = await fetch("/api/scores");
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.error || "排行榜加载失败");
+    }
+
+    renderTetrisScores(data.scores || []);
+  } catch (err) {
+    root.innerHTML = `<p class="empty">排行榜没加载出来：${escapeHTML(err.message || "未知错误")}</p>`;
+  }
+}
+
+function renderTetrisScores(scores) {
+  const root = $("#tetrisLeaderboard");
+  if (!root) return;
+
+  if (!scores.length) {
+    root.innerHTML = `<p class="empty">还没人上榜。</p>`;
+    return;
+  }
+
+  root.innerHTML = scores
+    .slice(0, 5)
+    .map((item, index) => {
+      return `
+        <div class="score-row">
+          <span class="rank">${String(index + 1).padStart(2, "0")}</span>
+          <strong>${escapeHTML(item.name || "匿名玩家")}</strong>
+          <small>${escapeHTML(item.score)}</small>
+        </div>
+      `;
+    })
+    .join("");
 }
 
 function createBoard(rows, cols) {
